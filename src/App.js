@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { BrowserRouter, Route, Switch, Link } from 'react-router-dom';
 import { InstantSearch, RangeInput, Configure, Hits, SearchBox, DynamicWidgets, RefinementList, HierarchicalMenu, useRefinementList, Pagination, ToggleRefinement } from 'react-instantsearch-hooks-web';
 import algoliasearch from 'algoliasearch';
 import './styles.css'
@@ -45,7 +45,7 @@ function App() {
         <Route path="/">
           <div>
             <h1>Welcome to My App</h1>
-            <p>Go to the search page to use InstantSearch.</p>
+            <p>Go to the <Link to="/search">search page</Link> to use InstantSearch.</p>
           </div>
         </Route>
       </Switch>
