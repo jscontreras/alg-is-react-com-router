@@ -1,0 +1,32 @@
+{
+  "name": "my-instantsearch-app",
+  "version": "1.0.0",
+  "description": "My InstantSearch App",
+  "main": "index.js",
+  "scripts": {
+    "start": "react-scripts start"
+  },
+  "dependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "algoliasearch": "^4.19.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-instantsearch-hooks-web": "^6.47.3",
+    "react-router-dom": "^5.3.0"
+  },
+  "devDependencies": {
+    "react-scripts": "^5.0.0"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
