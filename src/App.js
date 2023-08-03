@@ -1,12 +1,81 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Route, Switch, Link } from 'react-router-dom';
-import { InstantSearch, RangeInput, Configure, Hits, SearchBox, DynamicWidgets, RefinementList, HierarchicalMenu, useRefinementList, Pagination, ToggleRefinement } from 'react-instantsearch-hooks-web';
+import { InstantSearch, useRange, Configure, Hits, SearchBox, useNumericMenu, DynamicWidgets, RefinementList, HierarchicalMenu, useRefinementList, Pagination, ToggleRefinement } from 'react-instantsearch-hooks-web';
 import algoliasearch from 'algoliasearch';
 import './styles.css'
 
 const appId = 'SGF0RZXAXL';
 const apiKey = '92a97e0f8732e61569c6aa4c2b383308';
+
 const searchClient = algoliasearch(appId, apiKey);
+
+
+/**
+ * Extract Numeric Items based on Range.
+ * @param {} param0
+ * @returns
+ */
+function geOptionsFromRange({min, max}) {
+  if (min == 0 && max == 0) {
+    return [{ label: 'All' }];
+  }
+  else {
+    const range = max - min;
+    const segmentSize = range / 5;
+    const segments = [];
+
+    for (let i = 0; i < 5; i++) {
+      const segmentMin = min + i * segmentSize;
+      const segmentMax = segmentMin + segmentSize;
+      segments.push({ label: `Between ${segmentMin} - ${segmentMax}`, start: segmentMin, end: segmentMax });
+    }
+
+    return segments;
+  }
+}
+
+/**
+ * Numeric Menu
+ * @param {} props
+ * @returns
+ */
+export function NumericMenu(props) {
+  const { range } = useRange({ attribute: props.attribute });
+
+  const numericItems = geOptionsFromRange(range);
+  const { items, refine } = useNumericMenu({
+    ...props,
+    items: numericItems,
+  });
+
+  if (range.max !== 0 && range.min !== 0) {
+    return (
+      <div
+      >
+        <ul className="ais-NumericMenu-list">
+          {items.map((item) => (
+            <li
+              key={item.value}
+
+            >
+              <label className="ais-NumericMenu-label">
+                <input
+                  className="ais-NumericMenu-radio"
+                  type="radio"
+                  checked={item.isRefined}
+                  onChange={() => refine(item.value)}
+                />
+                <span className="ais-NumericMenu-labelText">{item.label}</span>
+              </label>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  }
+  return <></>;
+
+}
 
 function App() {
   return (
@@ -29,8 +98,8 @@ function App() {
                     title="Product Catalog"
                   />
                   <RefinementWrapper attribute="brand" />
-                  <RefinementWrapper attribute='price.value' Component={RangeInput}/>
-                  <RefinementWrapper attribute="price.on_sales" Component={ToggleRefinement} />
+                  <RefinementWrapper attribute='price.value' widget={NumericMenu} />
+                  <RefinementWrapper attribute="price.on_sales" widget={ToggleRefinement} />
                 </DynamicWidgets>
               </div>
               <div className="center-collumn">
@@ -54,13 +123,14 @@ function App() {
 }
 
 const RefinementWrapper = (props) => {
-  const Component = props.Component || RefinementList
+  const Component = props.widget || RefinementList;
+  const elemProps = {...props, widget: null};
   const {
     items,
   } = useRefinementList(props);
   return <div className="facet">
     {items.length > 0 && <span className="facet-name">{props.attribute}</span>}
-    <Component {...props} />
+    <Component {...elemProps} />
   </div>
 }
 
